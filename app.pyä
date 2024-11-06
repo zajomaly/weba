@@ -1,0 +1,107 @@
+from flask import Flask, request, redirect, url_for, flash
+import sqlite3
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Nastavte tajný kľúč pre flash správy
+
+# Domovská trasa
+@app.route('/')
+def index():
+    return "Vitajte na stránke arbitráže!"
+
+# Trasa na uloženie nastavení batérie
+@app.route('/save-battery-settings', methods=['POST'])
+def save_battery_settings():
+    battery_capacity = request.form['capacity']
+    battery_power = request.form['power']
+    threshold_type = request.form['threshold_type']
+
+    if threshold_type == 'fixed':
+        charge_threshold = request.form['charge_threshold']
+        discharge_threshold = request.form['discharge_threshold']
+        # Uložte pevné prahové hodnoty do databázy
+        conn = sqlite3.connect('/www/arbitrage/arbitrage.db')
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO battery_settings (capacity, power, charge_threshold, discharge_threshold) VALUES (?, ?, ?, ?)",
+            (battery_capacity, battery_power, charge_threshold, discharge_threshold)
+        )
+        conn.commit()
+        conn.close()
+    else:
+        # Automatické nastavenie prahových hodnôt
+        charge_threshold, discharge_threshold = calculate_automatic_thresholds()
+        if charge_threshold is not None and discharge_threshold is not None:
+            # Uložte automaticky vypočítané prahové hodnoty do databázy
+            conn = sqlite3.connect('/www/arbitrage/arbitrage.db')
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO battery_settings (capacity, power, charge_threshold, discharge_threshold) VALUES (?, ?, ?, ?)",
+                (battery_capacity, battery_power, charge_threshold, discharge_threshold)
+            )
+            conn.commit()
+            conn.close()
+
+    flash('Nastavenia batérie boli úspešne uložené.')
+    return redirect(url_for('battery_settings'))  # Upravte na správnu trasu
+
+# Trasa na uloženie nastavení fotovoltaiky
+@app.route('/save-solar-settings', methods=['POST'])
+def save_solar_settings():
+    installed = request.form.get('installed') == 'on'  # Kontrola, či je fotovoltaika nainštalovaná
+    inverter_capacity = request.form['inverter_capacity'] if installed else None  # Uložíme len ak je nainštalovaná
+
+    # Uložte nastavenia do databázy
+    conn = sqlite3.connect('/www/arbitrage/arbitrage.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO solar_settings (installed, inverter_capacity) VALUES (?, ?)",
+        (installed, inverter_capacity)
+    )
+    conn.commit()
+    conn.close()
+
+    flash('Nastavenia fotovoltaiky boli úspešne uložené.')
+    return redirect(url_for('solar_settings'))  # Upravte na správnu trasu
+
+# Trasa na uloženie nastavení cien
+@app.route('/save-price-settings', methods=['POST'])
+def save_price_settings():
+    distribution_price = request.form['distribution_price']
+    purchase_price = request.form['purchase_price']
+    monthly_fee = request.form['monthly_fee']
+
+    # Uložte nastavenia do databázy
+    conn = sqlite3.connect('/www/arbitrage/arbitrage.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO price_settings (distribution_price, purchase_price, monthly_fee) VALUES (?, ?, ?)",
+        (distribution_price, purchase_price, monthly_fee)
+    )
+    conn.commit()
+    conn.close()
+
+    flash('Nastavenia cien boli úspešne uložené.')
+    return redirect(url_for('price_settings'))  # Upravte na správnu trasu
+
+# Trasa na uloženie nastavení elektromera
+@app.route('/save-meter-settings', methods=['POST'])
+def save_meter_settings():
+    meter_type = request.form['meter_type']
+    meter_capacity = request.form['meter_capacity']
+
+    # Uložte nastavenia do databázy
+    conn = sqlite3.connect('/www/arbitrage/arbitrage.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO meter_settings (type, capacity) VALUES (?, ?)",
+        (meter_type, meter_capacity)
+    )
+    conn.commit()
+    conn.close()
+
+    flash('Nastavenia elektromera boli úspešne uložené.')
+    return redirect(url_for('meter_settings'))  # Upravte na správnu trasu
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8000)

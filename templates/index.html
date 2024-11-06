@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbitrážna aplikácia - Ceny</title>
+    <style>
+        .tables-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 200px;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2, .date-header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .date-header {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arbitrážna aplikácia - Ceny</h1>
+    <div class="tables-container">
+<div style="text-align: right; margin: 10px;">
+    <a href="{{ url_for('login') }}">Prihlásenie</a>
+</div>
+<div>
+    <h2>Ceny na dnes</h2>
+    <div class="date-header">{{ today_date }}</div>
+    <table>
+        <tr>
+            <th>Čas</th>
+            <th>Dnešné ceny</th>
+            <th>Rozhodnutie</th>
+        </tr>
+        {% for i in range(today_prices | length) %}
+        <tr>
+            <td>{{ today_prices[i][0] }}:00</td>
+            <td>{{ today_prices[i][1] }} €</td>
+            <td>{{ decisions[i][2] }}</td> <!-- Zobrazenie rozhodnutia (buy, sell, hold) -->
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+     
+        <div>
+            <h2>Ceny na zajtra</h2>
+            <div class="date-header">{{ tomorrow_date }}</div>
+            <table>
+                <tr>
+                    <th>Čas</th>
+                    <th>Zajtrajšie ceny</th>
+                </tr>
+                {% for price in tomorrow_prices %}
+                <tr>
+                    <td>{{ price[0] }}:00</td>
+                    <td>{{ price[1] }} €</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <h2>Predikované ceny na pozajtra</h2>
+            <div class="date-header">{{ future_date_day_after }}</div>
+            <table>
+                <tr>
+                    <th>Čas</th>
+                    <th>Predikované ceny</th>
+                </tr>
+                {% for price in predicted_prices_day_after %}
+                <tr>
+                    <td>{{ price[0] }}:00</td>
+                    <td>{{ '%.2f' | format(price[1]) }} €</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h2>Graf cien</h2>
+        <canvas id="priceChart" width="600" height="400"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Údaje pre graf z backendu
+        const historicalLabels = {{ historical_labels | tojson }};
+        const historicalData = {{ historical_data | tojson }};
+        const todayData = {{ today_prices | map(attribute=1) | list | tojson }};
+        const tomorrowData = {{ tomorrow_prices | map(attribute=1) | list | tojson }};
+        const predictedDataDayAfter = {{ predicted_prices_day_after | map(attribute=1) | list | tojson }};
+        const timeLabels = {{ today_prices | map(attribute=0) | list | tojson }}; // Hodinové značky pre os X
+
+        // Inicializácia grafu s rôznymi datasetmi
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [
+                    {
+                        label: 'Historické ceny',
+                        data: historicalData,
+                        borderColor: 'blue',
+                        fill: false
+                    },
+                    {
+                        label: 'Dnešné ceny',
+                        data: todayData,
+                        borderColor: 'green',
+                        fill: false
+                    },
+                    {
+                        label: 'Zajtrajšie ceny',
+                        data: tomorrowData,
+                        borderColor: 'red',
+                        fill: false
+                    },
+                    {
+                        label: 'Predikované ceny na pozajtra',
+                        data: predictedDataDayAfter,
+                        borderColor: 'purple',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Ceny - Historické, Dnešné, Zajtrajšie a Predikované'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

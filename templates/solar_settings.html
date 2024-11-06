@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Nastavenie Fotovoltaiky</title>
+</head>
+<body>
+    <h2>Nastavenie Fotovoltaiky</h2>
+<form action="{{ url_for('save_solar_settings') }}" method="POST">
+    <label for="installed">Fotovoltaický systém nainštalovaný:</label>
+    <input type="checkbox" id="installed" name="installed">
+    <br>
+    <label for="inverter_capacity">Kapacita invertora:</label>
+    <input type="text" id="inverter_capacity" name="inverter_capacity">
+    <br>
+    <input type="submit" value="Uložiť">
+</form>
+    <a href="{{ url_for('settings') }}">Späť na nastavenia</a>
+</body>
+</html>

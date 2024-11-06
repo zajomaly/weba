@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Nastavenie Cien</title>
+</head>
+<body>
+    <h2>Nastavenie Cien</h2>
+    <form action="/save-price-settings" method="post">
+        <label for="distribution_price">Cena za distribúciu (€):</label>
+        <input type="number" id="distribution_price" name="distribution_price" required>
+        <br>
+        <label for="purchase_price">Cena za nákup elektriny (€):</label>
+        <input type="number" id="purchase_price" name="purchase_price" required>
+        <br>
+        <label for="monthly_fee">Mesačná platba za odberné miesto (€):</label>
+        <input type="number" id="monthly_fee" name="monthly_fee" required>
+        <br>
+        <label for="pricing_model">Model cien:</label>
+        <select id="pricing_model" name="pricing_model">
+            <option value="fixed">Pevná taxa</option>
+            <option value="variable">Percentuálna taxa</option>
+        </select>
+        <br>
+        <input type="submit" value="Uložiť">
+    </form>
+    <a href="{{ url_for('settings') }}">Späť na nastavenia</a>
+</body>
+</html>

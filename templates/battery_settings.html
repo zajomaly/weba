@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Nastavenie Batérie</title>
+</head>
+<body>
+    <h2>Nastavenie Batérie</h2>
+    <form action="/save-battery-settings" method="post">
+        <label for="battery_capacity">Kapacita batérie (kWh):</label>
+        <input type="number" id="battery_capacity" name="battery_capacity" required>
+        <br>
+        <label for="battery_power">Výkon batérie (kW):</label>
+        <input type="number" id="battery_power" name="battery_power" required>
+        <br>
+        <label for="threshold_type">Typ prahovej hodnoty:</label>
+        <select id="threshold_type" name="threshold_type">
+            <option value="automatic">Automatické nastavenie</option>
+            <option value="fixed">Pevné hodnoty</option>
+        </select>
+        <br>
+        <div id="fixed-thresholds" style="display: none;">
+            <label for="charge_threshold">Prahová hodnota pre nabíjanie (kWh):</label>
+            <input type="number" id="charge_threshold" name="charge_threshold">
+            <br>
+            <label for="discharge_threshold">Prahová hodnota pre vybíjanie (kWh):</label>
+            <input type="number" id="discharge_threshold" name="discharge_threshold">
+        </div>
+        <input type="submit" value="Uložiť">
+    </form>
+
+    <script>
+        const thresholdTypeSelect = document.getElementById('threshold_type');
+        const fixedThresholdsDiv = document.getElementById('fixed-thresholds');
+
+        thresholdTypeSelect.addEventListener('change', function() {
+            if (this.value === 'fixed') {
+                fixedThresholdsDiv.style.display = 'block';
+            } else {
+                fixedThresholdsDiv.style.display = 'none';
+            }
+        });
+    </script>
+
+    <a href="{{ url_for('settings') }}">Späť na nastavenia</a>
+</body>
+</html>

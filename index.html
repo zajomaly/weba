@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbitrážna aplikácia - Zobrazenie cien</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Na grafy použijeme Chart.js -->
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arbitrážna aplikácia - Ceny</h1>
+    <h2>Ceny na dnes a zajtra</h2>
+    <table id="priceTable">
+        <thead>
+            <tr>
+                <th>Čas</th>
+                <th>Dnešné ceny</th>
+                <th>Zajtrajšie ceny</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dáta budú pridané pomocou JavaScriptu -->
+        </tbody>
+    </table>
+    
+    <h2>Graf cien</h2>
+    <canvas id="priceChart" width="400" height="200"></canvas>
+    
+    <script src="fetch_data.js"></script> <!-- JavaScript pre načítanie údajov -->
+</body>
+</html>

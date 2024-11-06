@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Nastavenia</title>
+</head>
+<body>
+    <h2>Nastavenia</h2>
+    <p><a href="{{ url_for('battery_settings') }}">Nastavenia Batérie</a></p>
+    <p><a href="{{ url_for('solar_settings') }}">Nastavenia Fotovoltaiky</a></p>
+    <p><a href="{{ url_for('price_settings') }}">Nastavenia Cien</a></p>
+    <p><a href="{{ url_for('meter_settings') }}">Nastavenia Elektromera</a></p>
+    <p>Tu budú ďalšie možnosti pre nastavenia.</p>
+    <a href="{{ url_for('logout') }}">Odhlásenie</a>
+</body>
+</html>
